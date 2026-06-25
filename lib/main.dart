@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/screen1_trip.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(const WasteGlassApp());
@@ -17,7 +17,7 @@ class WasteGlassApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const Screen1Trip(),
+      home: const HomeScreen(),
     );
   }
 }
