@@ -56,7 +56,7 @@ class _RouteScreenState extends State<RouteScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 
-                  // ================= ROUTE =================
+                  // ================= Route =================
                   Text(
                     "Route (Total: ${route?.totalDistance ?? 0} km)",
                     style: const TextStyle(
@@ -88,7 +88,7 @@ class _RouteScreenState extends State<RouteScreen> {
 
                   const SizedBox(height: 10),
 
-                  // ================= REPORT =================
+                  // ================= Report =================
                   if (report != null)
                     Card(
                       color: Colors.blue.shade50,
