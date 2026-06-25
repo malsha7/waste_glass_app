@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FB),
 
       appBar: AppBar(
         backgroundColor: darkBlue,
@@ -21,37 +21,64 @@ class HomeScreen extends StatelessWidget {
         ),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
       ),
 
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            _menuButton(
-              context,
-              "Validate Supplier",
-              Icons.qr_code,
-              const ValidationScreen(),
+            // ================= HEADER =================
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.recycling, color: Colors.white, size: 32),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "Waste Glass Collection System",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
 
-            const SizedBox(height: 15),
+            const SizedBox(height: 20),
 
-            _menuButton(
+            // ================= MENU CARDS =================
+            _menuCard(
               context,
-              "Collection Entry",
-              Icons.add_box,
-              const CollectionScreen(),
+              title: "Validate Supplier",
+              icon: Icons.qr_code,
+              page: const ValidationScreen(),
             ),
 
-            const SizedBox(height: 15),
-
-            _menuButton(
+            _menuCard(
               context,
-              "Route & Report",
-              Icons.map,
-              const RouteScreen(),
+              title: "Collection Entry",
+              icon: Icons.add_box,
+              page: const CollectionScreen(),
+            ),
+
+            _menuCard(
+              context,
+              title: "Route & Report",
+              icon: Icons.map,
+              page: const RouteScreen(),
             ),
           ],
         ),
@@ -59,45 +86,60 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _menuButton(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Widget page,
-  ) {
-    return SizedBox(
-      width: double.infinity,
-      height: 55,
-
-      child: ElevatedButton.icon(
-        icon: Icon(icon, color: darkBlue),
-
-        label: Text(
-          title,
-          style: const TextStyle(
-            color: Color(0xFF0D47A1), // dark blue text
-            fontWeight: FontWeight.w600,
-          ),
+  Widget _menuCard(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Widget page,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => page),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 15),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: darkBlue.withOpacity(0.15)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
         ),
-
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(
-              color: Color(0xFF0D47A1),
-              width: 1.5,
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: darkBlue,
+              child: Icon(icon, color: Colors.white),
             ),
-          ),
-        ),
+            const SizedBox(width: 12),
 
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => page),
-          );
-        },
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: darkBlue,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.grey,
+            ),
+          ],
+        ),
       ),
     );
   }
