@@ -75,6 +75,34 @@ class ApiService {
     }
   }
 
+ // =========================
+  //  Route /trip sequence
+ // =========================
+  static Future<List<dynamic>> getRoute() async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/api/route"),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Failed to load route data");
+    }
+  }
+
+ // =========================
+  //  Trip report
+ // =========================
+  static Future<Map<String, dynamic>> getTripReport() async {
+    final response = await http.get(
+      Uri.parse("$baseUrl/api/trip/report"),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Failed to load trip report");
+    }
 
 }
 
