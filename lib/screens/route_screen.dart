@@ -11,16 +11,14 @@ class RouteScreen extends StatefulWidget {
 }
 
 class _RouteScreenState extends State<RouteScreen> {
-
   RouteResponse? route;
   TripReport? report;
 
-  bool loading = false;
+  bool loading = true;
+
+  static const Color darkBlue = Color(0xFF0D47A1);
 
   Future<void> loadData() async {
-
-    setState(() => loading = true);
-
     try {
       final r1 = await ApiService.getRoute();
       final r2 = await ApiService.getTripReport();
@@ -28,13 +26,11 @@ class _RouteScreenState extends State<RouteScreen> {
       setState(() {
         route = r1;
         report = r2;
+        loading = false;
       });
-
     } catch (e) {
-      // optional error handling
+      setState(() => loading = false);
     }
-
-    setState(() => loading = false);
   }
 
   @override
@@ -43,72 +39,196 @@ class _RouteScreenState extends State<RouteScreen> {
     loadData();
   }
 
+  Widget statCard(String title, String value, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: darkBlue, size: 28),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: darkBlue,
+              ),
+            ),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Route & Report")),
+      backgroundColor: const Color(0xFFF5F7FB),
+
+      appBar: AppBar(
+        backgroundColor: darkBlue,
+        title: const Text(
+          "Route & Analytics",
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+      ),
 
       body: loading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 
-                  // ================= Route =================
-                  Text(
-                    "Route (Total: ${route?.totalDistance ?? 0} km)",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  // ================= Header =================
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: route?.route.length ?? 0,
-                      itemBuilder: (context, index) {
-
-                        final stop = route!.route[index];
-
-                        return Card(
-                          child: ListTile(
-                            title: Text(stop.name),
-                            subtitle: Text(
-                              "Distance: ${stop.distanceFromPrevious} km",
+                    child: const Row(
+                      children: [
+                        Icon(Icons.map, color: Colors.white, size: 32),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "Collection Route & Trip Analytics",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        );
-                      },
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ================= Statics =================
+                  Row(
+                    children: [
+                      statCard(
+                        "Total Distance",
+                        "${route?.totalDistance ?? 0} km",
+                        Icons.route,
+                      ),
+                      const SizedBox(width: 10),
+                      statCard(
+                        "Suppliers",
+                        "${report?.totalSuppliers ?? 0}",
+                        Icons.people,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Row(
+                    children: [
+                      statCard(
+                        "Expected KG",
+                        "${report?.totalExpectedKg ?? 0}",
+                        Icons.arrow_downward,
+                      ),
+                      const SizedBox(width: 10),
+                      statCard(
+                        "Collected KG",
+                        "${report?.totalCollectedKg ?? 0}",
+                        Icons.check_circle,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  const Text(
+                    "Route Stops",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: darkBlue,
                     ),
                   ),
 
                   const SizedBox(height: 10),
 
-                  // ================= Report =================
-                  if (report != null)
-                    Card(
-                      color: Colors.blue.shade50,
-                      child: Padding(
+                  // ================= Route List =================
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: route?.route.length ?? 0,
+                    itemBuilder: (context, index) {
+                      final stop = route!.route[index];
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
                         padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: darkBlue.withOpacity(0.1),
+                          ),
+                        ),
+                        child: Row(
                           children: [
-
-                            Text("Trip Report",
+                            CircleAvatar(
+                              backgroundColor: darkBlue,
+                              child: Text(
+                                "${index + 1}",
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-
-                            Text("Suppliers: ${report!.totalSuppliers}"),
-                            Text("Expected KG: ${report!.totalExpectedKg}"),
-                            Text("Collected KG: ${report!.totalCollectedKg}"),
+                                    color: Colors.white),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    stop.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Distance: ${stop.distanceFromPrevious} km",
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.location_on,
+                                color: Colors.grey),
                           ],
                         ),
-                      ),
-                    ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
