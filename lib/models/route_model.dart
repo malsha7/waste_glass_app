@@ -1,3 +1,38 @@
+
+class RouteResponse {
+
+final double totalDistance;
+final List<RouteStop> route;
+
+
+RouteResponse({
+
+required this.totalDistance,
+required this.route
+
+});
+
+
+factory RouteResponse.fromJson(Map<String,dynamic> json){
+
+return RouteResponse(
+
+totalDistance:
+(json['totalDistance'] as num).toDouble(),
+
+
+route:
+(json['route'] as List)
+.map((e)=>RouteStop.fromJson(e))
+.toList()
+
+);
+
+}
+
+}
+
+
 class RouteStop {
   final int supplierId;
   final String name;
