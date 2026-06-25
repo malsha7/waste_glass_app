@@ -10,7 +10,6 @@ class CollectionScreen extends StatefulWidget {
 }
 
 class _CollectionScreenState extends State<CollectionScreen> {
-
   final supplierController = TextEditingController();
   final clearController = TextEditingController();
   final colouredController = TextEditingController();
@@ -21,7 +20,6 @@ class _CollectionScreenState extends State<CollectionScreen> {
   static const Color darkBlue = Color(0xFF0D47A1);
 
   Future<void> submitData() async {
-
     setState(() {
       loading = true;
       message = "";
@@ -44,28 +42,35 @@ class _CollectionScreenState extends State<CollectionScreen> {
     });
   }
 
-  Widget buildField(
-    String label,
-    TextEditingController controller,
-    IconData icon,
-  ) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+  Widget inputField({
+    required String label,
+    required TextEditingController controller,
+    required IconData icon,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: darkBlue.withOpacity(0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          style: const TextStyle(color: darkBlue),
-          decoration: InputDecoration(
-            icon: Icon(icon, color: darkBlue),
-            labelText: label,
-            labelStyle: const TextStyle(color: darkBlue),
-            border: InputBorder.none,
-          ),
+      child: TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        style: const TextStyle(color: darkBlue),
+        decoration: InputDecoration(
+          icon: Icon(icon, color: darkBlue),
+          labelText: label,
+          labelStyle: const TextStyle(color: darkBlue),
+          border: InputBorder.none,
         ),
       ),
     );
@@ -74,7 +79,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FB),
 
       appBar: AppBar(
         backgroundColor: darkBlue,
@@ -83,59 +88,112 @@ class _CollectionScreenState extends State<CollectionScreen> {
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
       ),
 
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            buildField("Supplier ID", supplierController, Icons.person),
-            const SizedBox(height: 10),
-
-            buildField("Clear Glass KG", clearController, Icons.water_drop),
-            const SizedBox(height: 10),
-
-            buildField("Coloured Glass KG", colouredController, Icons.color_lens),
+            // ================= HEADER =================
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.recycling, color: Colors.white, size: 32),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "Record Glass Collection Data",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
             const SizedBox(height: 20),
 
+            // ================= INPUTS =================
+            inputField(
+              label: "Supplier ID",
+              controller: supplierController,
+              icon: Icons.person,
+            ),
+
+            inputField(
+              label: "Clear Glass KG",
+              controller: clearController,
+              icon: Icons.water_drop,
+            ),
+
+            inputField(
+              label: "Coloured Glass KG",
+              controller: colouredController,
+              icon: Icons.color_lens,
+            ),
+
+            const SizedBox(height: 10),
+
+            // ================= BUTTON =================
             SizedBox(
               width: double.infinity,
-              height: 50,
-
+              height: 52,
               child: ElevatedButton(
                 onPressed: loading ? null : submitData,
-
                 style: ElevatedButton.styleFrom(
                   backgroundColor: darkBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-
-                child: Text(
-                  loading ? "Submitting..." : "Submit Collection",
-                  style: const TextStyle(color: Colors.white),
-                ),
+                child: loading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "Submit Collection",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
 
-            if (loading)
-              const CircularProgressIndicator(color: darkBlue),
-
-            const SizedBox(height: 10),
-
+            // ================= STATUS =================
             if (message.isNotEmpty)
-              Text(
-                message,
-                style: TextStyle(
-                  color: message.contains("Success")
-                      ? Colors.green
-                      : Colors.red,
-                  fontWeight: FontWeight.bold,
+              Center(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: message.contains("Success")
+                        ? Colors.green.shade100
+                        : Colors.red.shade100,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    message,
+                    style: TextStyle(
+                      color: message.contains("Success")
+                          ? Colors.green.shade800
+                          : Colors.red.shade800,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
           ],
